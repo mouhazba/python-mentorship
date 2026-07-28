@@ -1,0 +1,370 @@
+<title>λ — le connecteur le plus léger de Python</title>
+<style>
+  :root {
+    --ink: #1b2320;
+    --ink-soft: #3c4740;
+    --paper: #f4f6f1;
+    --paper-raised: #ffffff;
+    --line: #dde3d8;
+    --brass: #96701f;
+    --brass-strong: #6e5215;
+    --brass-wash: #f1e6cf;
+    --slate: #5b6560;
+    --code-bg: #10140f;
+    --code-fg: #e7ece2;
+    --code-key: #e0ac54;
+    --code-str: #8fc7a3;
+    --code-com: #6f8177;
+    --warn-bg: #f7e9df;
+    --warn-line: #c97a3f;
+    --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #eef1ec;
+      --ink-soft: #c3ccc5;
+      --paper: #12160f;
+      --paper-raised: #1a2117;
+      --line: #2b352a;
+      --brass: #e2ac54;
+      --brass-strong: #f2c476;
+      --brass-wash: #2c2412;
+      --slate: #93a096;
+      --code-bg: #0b0d09;
+      --code-fg: #e7ece2;
+      --code-key: #f0bd63;
+      --code-str: #9ed8b1;
+      --code-com: #7c8f83;
+      --warn-bg: #2a2013;
+      --warn-line: #d98f4f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #eef1ec; --ink-soft: #c3ccc5; --paper: #12160f; --paper-raised: #1a2117;
+    --line: #2b352a; --brass: #e2ac54; --brass-strong: #f2c476; --brass-wash: #2c2412;
+    --slate: #93a096; --code-bg: #0b0d09; --code-fg: #e7ece2; --code-key: #f0bd63;
+    --code-str: #9ed8b1; --code-com: #7c8f83; --warn-bg: #2a2013; --warn-line: #d98f4f;
+  }
+  :root[data-theme="light"] {
+    --ink: #1b2320; --ink-soft: #3c4740; --paper: #f4f6f1; --paper-raised: #ffffff;
+    --line: #dde3d8; --brass: #96701f; --brass-strong: #6e5215; --brass-wash: #f1e6cf;
+    --slate: #5b6560; --code-bg: #10140f; --code-fg: #e7ece2; --code-key: #e0ac54;
+    --code-str: #8fc7a3; --code-com: #6f8177; --warn-bg: #f7e9df; --warn-line: #c97a3f;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.55;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 4rem 1.5rem 5rem; }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brass);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 1.4rem;
+    height: 1px;
+    background: var(--brass);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2.1rem, 5vw, 3.1rem);
+    line-height: 1.12;
+    margin: 0.6rem 0 0.9rem;
+    text-wrap: balance;
+  }
+  h1 em { font-style: normal; color: var(--brass-strong); }
+
+  .lede {
+    font-size: 1.1rem;
+    color: var(--ink-soft);
+    max-width: 62ch;
+    margin: 0 0 3rem;
+  }
+
+  /* ---- diagram ---- */
+  .diagram {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1rem;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 2.2rem 1.6rem;
+    margin: 0 0 1.2rem;
+  }
+  .diagram-box {
+    text-align: center;
+  }
+  .diagram-box .label {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  .diagram-box .content {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    background: var(--code-bg);
+    color: var(--code-fg);
+    border-radius: 3px;
+    padding: 0.9rem 0.8rem;
+  }
+  .diagram-box .content .k { color: var(--code-key); }
+  .diagram-box.left .content { border-left: 3px solid var(--slate); }
+  .diagram-box.right .content { border-left: 3px solid var(--brass); }
+
+  .bridge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .bridge .lam {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: var(--brass);
+    color: var(--paper-raised);
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .bridge .line {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--slate);
+    white-space: nowrap;
+  }
+
+  .rule {
+    font-size: 0.95rem;
+    color: var(--slate);
+    text-align: center;
+    margin: 0 0 3rem;
+  }
+  .rule strong { color: var(--ink); font-weight: 600; }
+
+  /* ---- practical rule callout ---- */
+  .callout {
+    background: var(--brass-wash);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1.4rem 1.6rem;
+    margin: 0 0 3rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto 1fr;
+    gap: 0.8rem 1rem;
+    align-items: center;
+    font-size: 0.95rem;
+  }
+  .callout .tag {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.55rem;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .callout .tag.yes { background: var(--brass); color: var(--paper-raised); }
+  .callout .tag.no { background: var(--ink-soft); color: var(--paper); }
+
+  /* ---- ecosystem grid ---- */
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin: 0 0 1.4rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin: 0 0 3rem;
+  }
+  .card {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1.2rem 1.3rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .card .name {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brass);
+  }
+  .card p {
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+  }
+  .card pre {
+    margin: 0;
+    background: var(--code-bg);
+    border-radius: 3px;
+    padding: 0.7rem 0.8rem;
+    overflow-x: auto;
+    font-size: 0.8rem;
+  }
+  .card code { font-family: var(--font-mono); color: var(--code-fg); }
+  .card .k { color: var(--code-key); }
+  .card .s { color: var(--code-str); }
+  .card .warn {
+    font-size: 0.8rem;
+    color: var(--warn-line);
+    background: var(--warn-bg);
+    border-radius: 3px;
+    padding: 0.45rem 0.6rem;
+  }
+
+  /* ---- synthesis table ---- */
+  .table-scroll { overflow-x: auto; margin: 0 0 3rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    min-width: 560px;
+  }
+  th, td {
+    text-align: left;
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid var(--line);
+  }
+  th {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 500;
+  }
+  td:first-child { color: var(--brass-strong); font-family: var(--font-mono); font-size: 0.85rem; white-space: nowrap; }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 1.4rem;
+    font-size: 0.85rem;
+    color: var(--slate);
+  }
+  footer a { color: var(--brass-strong); }
+
+  @media (max-width: 620px) {
+    .diagram { grid-template-columns: 1fr; }
+    .bridge { flex-direction: row; }
+    .callout { grid-template-columns: auto 1fr; }
+  }
+</style>
+
+<div class="wrap">
+  <span class="eyebrow">Python · Concept</span>
+  <h1><em>λ</em> — le connecteur le plus léger de Python</h1>
+  <p class="lede">
+    Une lambda n'est pas « une fonction en plus court ». C'est l'adaptateur qui relie une fonction
+    générique — qui attend « un comportement » — à un besoin précis et local, sans créer une
+    fonction nommée qui ne sert qu'une fois.
+  </p>
+
+  <div class="diagram">
+    <div class="diagram-box left">
+      <span class="label">Fonction générique</span>
+      <div class="content"><span class="k">sorted</span>(produits, key=?)</div>
+    </div>
+    <div class="bridge">
+      <div class="lam">λ</div>
+      <span class="line">injecte le comportement</span>
+    </div>
+    <div class="diagram-box right">
+      <span class="label">Besoin précis</span>
+      <div class="content">trier par prix</div>
+    </div>
+  </div>
+  <p class="rule">
+    <strong>sorted</strong>, <strong>map</strong>, <strong>filter</strong>, <strong>key=</strong> ne savent pas
+    ce que tu veux faire — la lambda le leur dit, juste pour cette fois.
+  </p>
+
+  <div class="callout">
+    <span class="tag yes">lambda</span>
+    <span>court, immédiat, jamais réutilisé ailleurs</span>
+    <span class="tag no">def</span>
+    <span>testé isolément, réutilisé, ou plus d'une expression</span>
+  </div>
+
+  <h2>Le même besoin, partout dans l'écosystème</h2>
+  <div class="grid">
+    <div class="card">
+      <span class="name">stdlib</span>
+      <p>Critère de tri ou de filtre ponctuel, sans fonction nommée dédiée.</p>
+      <pre><code>sorted(gens, <span class="k">key</span>=<span class="k">lambda</span> p: p[<span class="s">"age"</span>])</code></pre>
+    </div>
+    <div class="card">
+      <span class="name">Django</span>
+      <p>Fournit un <em>callable</em> pour retarder le calcul à l'exécution, pas à l'import.</p>
+      <pre><code>default=<span class="k">lambda</span>: now() + timedelta(days=<span class="s">7</span>)</code></pre>
+    </div>
+    <div class="card">
+      <span class="name">Pandas / NumPy</span>
+      <p>Transformation ad hoc quand aucune fonction vectorisée n'existe.</p>
+      <pre><code>df[<span class="s">"col"</span>].apply(<span class="k">lambda</span> x: x.strip())</code></pre>
+      <span class="warn">⚠ anti-pattern de perf si une version vectorisée existe (10–100x plus lent)</span>
+    </div>
+    <div class="card">
+      <span class="name">PySpark</span>
+      <p>La brique même du modèle MapReduce : une fonction envoyée à chaque nœud.</p>
+      <pre><code>rdd.map(<span class="k">lambda</span> x: x * <span class="s">2</span>)</code></pre>
+    </div>
+  </div>
+
+  <h2>Synthèse</h2>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>Contexte</th><th>Rôle de la lambda</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>stdlib</td><td>callback de tri / transformation / filtre ponctuel</td></tr>
+        <tr><td>Tkinter</td><td>figer des arguments pour un callback sans-argument</td></tr>
+        <tr><td>Django</td><td>callable différé, évalué à l'exécution</td></tr>
+        <tr><td>Pandas/NumPy</td><td>transformation ad hoc, à utiliser avec parcimonie</td></tr>
+        <tr><td>PyTorch/Keras</td><td>opération custom insérée dans un pipeline/modèle</td></tr>
+        <tr><td>Spark (RDD)</td><td>fonction distribuée à chaque partition</td></tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <footer>
+    Fiche issue de l'étude du concept <code>lambda</code> — mentorat Python.
+    Voir <a href="https://peps.python.org/pep-0008/#programming-recommendations">PEP 8 — Programming Recommendations</a>.
+  </footer>
+</div>

@@ -61,3 +61,8 @@ Le point commun : Django exige souvent un *callable* (pas juste une valeur) pour
 | Spark | fonction distribuée appliquée à chaque partition (modèle MapReduce) |
 
 **Le fil conducteur partout** : la lambda n'est jamais la brique de logique métier centrale d'une application — c'est le connecteur léger entre une API générique (qui attend "une fonction") et un besoin très spécifique et local. Dès que ce besoin grandit (plusieurs lignes, réutilisation, besoin de tests unitaires), le bon réflexe est de remonter vers une fonction `def` nommée.
+
+## Pour aller plus loin
+
+- [PEP 8 — Programming Recommendations (position officielle sur `lambda` vs `def`)](https://peps.python.org/pep-0008/#programming-recommendations)
+- [Python Docs — Lambda Expressions (référence du langage)](https://docs.python.org/3/reference/expressions.html#lambda)
