@@ -1,0 +1,9 @@
+2026-08-01 08:00:12 [INFO] Service initialized successfully.
+2026-08-01 08:02:45 [INFO] User session started for user_id=402.
+2026-08-01 08:05:01 [WARNING] High memory usage detected: 82%.
+2026-08-01 08:07:33 [ERROR] Failed to connect to database at 192.168.1.50:5432 (TimeoutError).
+2026-08-01 08:10:00 [INFO] Periodic health check passed.
+2026-08-01 08:12:18 [ERROR] Authentication failure for user admin: invalid credentials.
+2026-08-01 08:15:22 [WARNING] Disk space low on partition /var/log.
+2026-08-01 08:18:09 [ERROR] Unhandled exception in worker thread #4: IndexOutOfRange.
+2026-08-01 08:20:00 [INFO] Worker process restarted.

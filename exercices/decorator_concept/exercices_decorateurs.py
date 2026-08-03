@@ -23,7 +23,7 @@ carre_nombre(4)
 
 @log_appel
 def calcul_tax(n, imposition=0.18):
-     print(f"Montant {n} est imposable a {n*imposition}")
+    return f"Montant {n} est imposable a {n*imposition}"
 
 calcul_tax(500, imposition=0.15)
 
